@@ -86,6 +86,10 @@ while code <= 1652 :
             
             list_courses.append(dic)
         
+        print ('current', e['pagination']['current_page'] , 'last ', e['pagination']['total_page'] )
+        
+        break
+        
         if e['pagination']['current_page'] == e['pagination']['total_page'] :
             break
         
