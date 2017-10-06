@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 import requests
 import json
 import pandas as pd
@@ -41,82 +42,91 @@ while code <= 1652 :
             except :
                 cat_price = 0
             
-            try :    
-            	cat_subs = e['results'][i]['num_subscribers']
-            except :
-            	cat_subs = 0
-            	
             try :
-            	cat_rating = e['results'][i]['avg_rating_recent']
-            	
-            except :
-            	cat_rating = 0
-            
-            try :	
-            	cat_caption = e['results'][i]['caption_languages']
+                cat_subs = e['results'][i]['num_subscribers']
             
             except :
-            	cat_caption = '-'
-            	
+                cat_subs = 0
+               
             try :
-            	cat_last_updated = e['results'][i]['published_time']
-			
-			except :
-            	cat_last_updated = '-'
-            	
-			try :
-            	cat_lang = e['results'][i]['locale']['english_title']
+                cat_rating = e['results'][i]['avg_rating_recent']
+            
+            except: 
+                cat_rating = 0
+             
+            try :
+                cat_caption = e['results'][i]['caption_languages']
             
             except :
-            	cat_lang = '-'
-            	
-            	
+                cat_caption = '-'
+            
+            try :
+                cat_last_updated = e['results'][i]['published_time']
+                
+            except :
+                cat_last_updated = '-'
+            
+            try :
+                cat_lang = e['results'][i]['locale']['english_title']
+                
+            except :
+                cat_lang = "-"
+                
             cat_inst_name = []
             cat_inst_job = []
             
-            number = len(e['results'][i]['visible_instructors'])
-            
-            for k in range (0,number) :
-            
-            	try :
-                	cat_inst_name.append(e['results'][i]['visible_instructors'][k]['display_name'])
-                
-                except :
-                	cat_inst_name.append('-')
-                	
-                try :
-                	cat_inst_job.append(e['results'][i]['visible_instructors'][k]['job_title'])
-                
-                except :
-                	cat_inst_job.append('-')
-                	
-            try :    	
-            	cat_descr = e['results'][i]['headline']
+            try :
+                number = len(e['results'][i]['visible_instructors'])
             
             except :
-            	cat_descr = '-'
-            	
+                number = 0
+                
+            for k in range (0,number) :
+                
+                try :
+                    cat_inst_name.append(e['results'][i]['visible_instructors'][k]['display_name'])
+                
+                except :
+                    cat_inst_name.append('-')
+                    
+                try :
+                    cat_inst_job.append(e['results'][i]['visible_instructors'][k]['job_title'])
+                
+                except :
+                    cat_inst_job.append('-')
+                    
+            try :
+                cat_descr = e['results'][i]['headline']
+            
+            except :
+                cat_descr = '-'
+                
             re = BeautifulSoup (requests.get(base_url + cat_url).text)
             
             try :
-            	cat_inst_desc = re.find("div",{"class" : "instructor__description"}).p.text.strip()
+                cat_inst_desc = re.find("div",{"class" : "instructor__description"}).p.text.strip()
             
             except :
-            	cat_inst_desc = '-'
-            	
-            q = re.find_all("ul",{"class" : "what-you-get__items"})
-            num = len(re.find_all('span', {'class':"what-you-get__text"}))
+                cat_inst_desc = '-'
+                
+            #q = re.find_all("ul",{"class" : "what-you-get__items"})
             
+            try :
+                num = len(re.find_all('span', {'class':"what-you-get__text"}))
+            
+            except :
+                num = 0
+                
             learn = []
             
             for j in range (0,num) :
-            	
-            	try :
-                	learn.append(re.find_all('span', {'class':"what-you-get__text"})[j].text.strip())
-        		
-            	except :
-            		learn.append ('-')
-            		
+                
+                try :
+                    learn.append(re.find_all('span', {'class':"what-you-get__text"})[j].text.strip())
+                
+                except :
+                    learn.append('-')
+            
             dic['What Will You Learn'] = learn
             dic['Course Name'] = cat_title
             dic['Brief Description'] = cat_descr
@@ -132,9 +142,7 @@ while code <= 1652 :
             dic['Instructor Description'] = cat_inst_desc
             
             list_courses.append(dic)
-        
-        print ('current', e['pagination']['current_page'] , 'last ', e['pagination']['total_page'] )
-        
+        #print ('current', e['pagination']['current_page'], 'last ', e['pagination']['total_page'])
         if e['pagination']['current_page'] == e['pagination']['total_page'] :
             break
         
